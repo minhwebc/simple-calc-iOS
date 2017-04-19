@@ -106,6 +106,15 @@ class ViewController: UIViewController {
         userView.text = result;
     }
     @IBAction func pressEqual(_ sender: Any) {
+        var numbers = result.components(separatedBy: "%");
+        if(numbers.count == 2){
+            var number1 = Double(numbers[0].trimmingCharacters(in: CharacterSet.whitespacesAndNewlines));
+            var number2 = Double(numbers[1].trimmingCharacters(in: CharacterSet.whitespacesAndNewlines));
+            let resultCalc = number1!.truncatingRemainder(dividingBy: number2!);
+            result = String(describing: resultCalc);
+            userView.text = result;
+            return;
+        }
         let expression = NSExpression(format:result)
         if let resultCalc = expression.expressionValue(with: nil, context: nil) as? NSNumber {
             result = String(describing: resultCalc);
