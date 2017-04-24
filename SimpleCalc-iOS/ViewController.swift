@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     private var number2 : Double = 0;
     private var result : String = "";
     private var pressOpt : Bool = false;
+    private var history : [String] = [];
     @IBOutlet weak var userView: UITextField!
     @IBAction func pressOne(_ sender: Any) {
         result = result + "1";
@@ -106,8 +107,19 @@ class ViewController: UIViewController {
         userView.text = result;
     }
     @IBAction func pressEqual(_ sender: Any) {
+        var numbers = result.components(separatedBy: "%");
+        if(numbers.count == 2){
+            var number1 = Double(numbers[0].trimmingCharacters(in: CharacterSet.whitespacesAndNewlines));
+            var number2 = Double(numbers[1].trimmingCharacters(in: CharacterSet.whitespacesAndNewlines));
+            let resultCalc = number1!.truncatingRemainder(dividingBy: number2!);
+            history.append("\(result) = \(String(describing: resultCalc))");
+            result = String(describing: resultCalc);
+            userView.text = result;
+            return;
+        }
         let expression = NSExpression(format:result)
         if let resultCalc = expression.expressionValue(with: nil, context: nil) as? NSNumber {
+            history.append("\(result) = \(String(describing: resultCalc))");
             result = String(describing: resultCalc);
             userView.text = result;
         } else {
@@ -138,6 +150,7 @@ class ViewController: UIViewController {
             sum += Double(number)
             count += 1
         }
+        history.append("\(result) COUNT = \(String(describing: count))");
         userView.text = String(describing: count);
     }
     @IBAction func pressAvg(_ sender: Any) {
@@ -157,6 +170,8 @@ class ViewController: UIViewController {
             count += 1.0;
         }
         userView.text = String(describing: Double(sum/count));
+        history.append("\(result) AVG = \(String(describing: Double(sum/count)))");
+
     }
     @IBAction func addSpace(_ sender: Any) {
         result = result + " ";
@@ -178,6 +193,7 @@ class ViewController: UIViewController {
         if(yourArray.count > 1){
             userView.text = ("fact operator can only take one number");
         }else{
+            history.append("\(result) FACT = \(String(describing: factorial(factorialNumber: UInt64(yourArray[0]))))");
             userView.text = String(describing: factorial(factorialNumber: UInt64(yourArray[0])));
         }
 
@@ -199,6 +215,11 @@ class ViewController: UIViewController {
         } else {
             return factorialNumber * factorial(factorialNumber: factorialNumber - 1)
         }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        var secondVC : TableViewController = segue.destination as! TableViewController
+        secondVC.history = history;
     }
 }
 
